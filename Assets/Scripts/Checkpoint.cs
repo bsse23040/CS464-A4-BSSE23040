@@ -5,6 +5,8 @@ using UnityEngine;
 /// </summary>
 public class Checkpoint : MonoBehaviour
 {
+    [SerializeField] AudioClip clip;
+
     bool reached;
 
     void OnTriggerEnter(Collider other)
@@ -12,5 +14,6 @@ public class Checkpoint : MonoBehaviour
         if (reached || !other.CompareTag("Player")) return;
         reached = true;                                  // only the first time, so it does not say it again
         GameManager.Instance.SetCheckpoint(transform);
+        if (SfxPlayer.Instance != null) SfxPlayer.Instance.Play(clip);
     }
 }

@@ -45,14 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   targetScore: 6
+  winTitle: LEVEL COMPLETE!
   lives: 3
   respawnDelay: 0.6
   spawnProtection: 1.5
+  winClip: {fileID: 8300000, guid: 8a8da27073c2ee749a47828236eb02c2, type: 3}
+  loseClip: {fileID: 8300000, guid: 7d2ceffcf098b0843ac82b815625150f, type: 3}
   player: {fileID: 0}
   respawnPoint: {fileID: 0}
-  scoreText: {fileID: 0}
-  livesText: {fileID: 0}
-  hintText: {fileID: 0}
-  boostText: {fileID: 0}
-  winPanel: {fileID: 0}
-  losePanel: {fileID: 0}
+  ui: {fileID: 0}

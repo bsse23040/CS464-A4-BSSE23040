@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 /// <summary>
 /// The hearts. Health owns the hearts and the rule about how often they can be lost (the i-frames).
-/// The GameManager owns the lives.
+/// The GameManager owns the lives. Health does not know what happens when it is hurt: it raises an event,
+/// and whoever cares (the health bar, the hit sound, the sparks, the red flash) is listening.
 /// </summary>
 public class Health : MonoBehaviour
 {
@@ -15,6 +17,11 @@ public class Health : MonoBehaviour
 
     public int Current => current;
     public int Max => max;
+
+    // raised after a hit lands, with the hearts that are left and the most there can be
+    public event Action<int, int> Damaged;
+    // raised when the hearts are filled again, after a respawn
+    public event Action<int, int> Restored;
 
     void Awake()
     {
@@ -37,7 +44,7 @@ public class Health : MonoBehaviour
 
         invulnerableUntil = Time.time + iFrames;                              // start the clock
         current -= amount;
-        GameManager.Instance.UpdateUI();
+        Damaged?.Invoke(current, max);
         if (current <= 0) GameManager.Instance.PlayerDied();                  // <= 0, not == 0: the crusher hits for 2
         return true;
     }
@@ -47,6 +54,6 @@ public class Health : MonoBehaviour
     {
         current = max;
         invulnerableUntil = Time.time + protection;
-        GameManager.Instance.UpdateUI();
+        Restored?.Invoke(current, max);
     }
 }

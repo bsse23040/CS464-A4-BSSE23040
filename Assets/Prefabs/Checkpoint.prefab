@@ -67,6 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff25a751d5235546a5a43257d1c99be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
+  clip: {fileID: 8300000, guid: 6ef14aa045f6c9d46837b92590716c87, type: 3}
 --- !u!1 &9205167924032050387
 GameObject:
   m_ObjectHideFlags: 0

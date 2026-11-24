@@ -1,12 +1,10 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// One GameManager per level. It owns the score, the lives and the three states of the game:
-/// playing, won and lost. The prefab keeps only the numbers; each level gives it its own texts, panels,
-/// player and respawn point.
+/// playing, won and lost. The prefab keeps only the numbers; each level gives it its own player, respawn point
+/// and win title. The interface is the LevelUI prefab, which is the same in every level.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -14,17 +12,21 @@ public class GameManager : MonoBehaviour
 
     [Header("Win")]
     [SerializeField] int targetScore = 6;             // coins needed before the goal counts
+    [SerializeField] string winTitle = "LEVEL COMPLETE!";
 
     [Header("Lives")]
     [SerializeField] int lives = 3;
     [SerializeField] float respawnDelay = 0.6f;       // a beat to see what happened
     [SerializeField] float spawnProtection = 1.5f;    // seconds nothing can hurt the new life
 
+    [Header("Sounds")]
+    [SerializeField] AudioClip winClip;
+    [SerializeField] AudioClip loseClip;
+
     [Header("Set in each level")]
     [SerializeField] Health player;
     [SerializeField] Transform respawnPoint;
-    [SerializeField] TMP_Text scoreText, livesText, hintText, boostText;
-    [SerializeField] GameObject winPanel, losePanel;
+    [SerializeField] LevelUI ui;
 
     int score;
     bool respawning, ended;
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour
     PlayerController controller;
 
     public bool IsRespawning => respawning;
+    public bool Ended => ended;
 
     void Awake() => Instance = this;
 
@@ -48,7 +51,7 @@ public class GameManager : MonoBehaviour
         int tenths = Mathf.CeilToInt(controller.BoostLeft * 10f);
         if (tenths == shownBoost) return;
         shownBoost = tenths;
-        boostText.text = tenths > 0 ? $"Speed boost: {tenths / 10f:0.0} s" : "";
+        ui.SetBoost(tenths > 0 ? $"Speed boost: {tenths / 10f:0.0} s" : "");
     }
 
     // ---------------------------------------------------------------- score and win
@@ -68,8 +71,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        scoreText.text = $"Coins: {score} / {targetScore}";
-        livesText.text = $"Lives: {lives}   Health: {Mathf.Max(player.Current, 0)} / {player.Max}";   // never show -1 hearts
+        ui.scoreText.text = $"Coins {score} / {targetScore}";
+        ui.livesText.text = $"Lives {lives}";        // the hearts have their own bar
     }
 
     void ShowHint(string message)
@@ -80,9 +83,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Hint(string message)
     {
-        hintText.text = message;
+        ui.SetHint(message);
         yield return new WaitForSeconds(2f);
-        hintText.text = "";
+        ui.SetHint("");
     }
 
     // ---------------------------------------------------------------- losing a life
@@ -118,28 +121,22 @@ public class GameManager : MonoBehaviour
     void Win()
     {
         ended = true;
-        winPanel.SetActive(true);
+        int level = gameObject.scene.buildIndex;
+        float time = Time.timeSinceLevelLoad;         // scaled time, so a pause does not count
+        bool best = SaveData.Record(level, time);
+        SaveData.Unlock(level + 1);
+
+        bool lastLevel = level >= SaveData.LevelCount;
+        ui.ShowWin(winTitle, lastLevel ? "Credits" : "Next level", time, best, SaveData.BestTime(level));
+        if (SfxPlayer.Instance != null) SfxPlayer.Instance.Play(winClip);
         Time.timeScale = 0f;                          // stops physics, the guards and everything that uses Time.deltaTime
     }
 
     void Lose()
     {
         ended = true;
-        losePanel.SetActive(true);
+        ui.ShowLose();
+        if (SfxPlayer.Instance != null) SfxPlayer.Instance.Play(loseClip);
         Time.timeScale = 0f;
-    }
-
-    // wired to the buttons on the win and lose panels
-    public void Restart()
-    {
-        Time.timeScale = 1f;                          // timeScale survives a scene load, so put it back first
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public void NextLevel()
-    {
-        Time.timeScale = 1f;
-        int next = SceneManager.GetActiveScene().buildIndex + 1;
-        SceneManager.LoadScene(next < SceneManager.sceneCountInBuildSettings ? next : 0);   // after the last level, back to the first
     }
 }

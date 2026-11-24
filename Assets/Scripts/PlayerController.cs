@@ -59,6 +59,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Update still runs at a time scale of 0, so the pause menu and the end screens have to be asked
+        if (PauseMenu.IsPaused || (GameManager.Instance != null && GameManager.Instance.Ended))
+        {
+            move = Vector3.zero;
+            jumpQueued = false;
+            return;
+        }
+
         // read the keys here: a key press only lasts one frame, and FixedUpdate does not run every frame
         Vector2 input = moveAction.ReadValue<Vector2>();
 
