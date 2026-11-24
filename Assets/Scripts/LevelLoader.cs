@@ -16,7 +16,7 @@ public class LevelLoader : MonoBehaviour
     [SerializeField] GameObject loadingPanel;        // shown while a scene loads
     [SerializeField] Image bar;                      // an Image set to Filled, Horizontal
     [SerializeField] TMP_Text percentText;
-    [SerializeField] float minimumShowTime = 0.35f;  // the scenes are small, so without this the bar would flash by
+    [SerializeField] float minimumShowTime = 0.6f;  // the scenes are small, so without this the bar would flash by too fast to see
 
     bool loading;
 
