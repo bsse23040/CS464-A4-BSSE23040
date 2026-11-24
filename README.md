@@ -1,6 +1,6 @@
 # CS464 Assignment 04 · Mohsin Raza Ojla · BSSE23040
 
-**Video (90–180 s):** VIDEO_LINK_HERE
+**Video (90–180 s):** https://drive.google.com/file/d/1YRWafJR3E6wBeupFbbpKMLCswv47g_uj/view?usp=sharing
 
 <p>
 <img src="Docs/hud-16x9.png" width="320" alt="The HUD at 16:9">
