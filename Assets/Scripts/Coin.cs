@@ -7,6 +7,8 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [SerializeField] int value = 1;
+    [SerializeField] AudioClip pickupClip;
+    [SerializeField] GameObject burst;               // a particle effect that removes itself (Stop Action: Destroy)
 
     void OnTriggerEnter(Collider other)
     {
@@ -15,6 +17,8 @@ public class Coin : MonoBehaviour
 
         if (!other.CompareTag("Player")) return;          // tags are case-sensitive: the built-in Player tag
         GameManager.Instance.AddScore(value);             // the coin never touches the score itself
+        if (SfxPlayer.Instance != null) SfxPlayer.Instance.Play(pickupClip);   // the SfxPlayer is not destroyed with the coin
+        if (burst != null) Instantiate(burst, transform.position, Quaternion.identity);
         Destroy(gameObject);                              // gameObject, not this: Destroy(this) would remove only the script
     }
 }

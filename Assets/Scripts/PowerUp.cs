@@ -9,6 +9,8 @@ public class PowerUp : MonoBehaviour
     [SerializeField] float multiplier = 1.6f;
     [SerializeField] float duration = 5f;        // seconds
     [SerializeField] float spinSpeed = 90f;      // degrees per second
+    [SerializeField] AudioClip pickupClip;
+    [SerializeField] GameObject burst;
 
     void Update() => transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f);
 
@@ -16,6 +18,8 @@ public class PowerUp : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         other.GetComponent<PlayerController>().BoostSpeed(multiplier, duration);
+        if (SfxPlayer.Instance != null) SfxPlayer.Instance.Play(pickupClip);
+        if (burst != null) Instantiate(burst, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 }
